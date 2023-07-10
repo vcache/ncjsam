@@ -18,7 +18,7 @@ def run_build(args, daemon_context=None):
     outputs = build(
         sources,
         build_targets,
-        not args.no_js_minification,
+        args.js_minification,
         daemon_context,
     )
     if args.dry_run:

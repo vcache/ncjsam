@@ -60,9 +60,9 @@ def parse():
         help='a list of output artifacts to build',
     )
     parser.add_argument(
-        '--no-js-minification',
+        '--js-minification',
         action='store_true',
-        help='turn off JS minification',
+        help='turn on JS minification',
     )
     # TODO: make zip-archive?
     # TODO: upload to itch.io or similar
