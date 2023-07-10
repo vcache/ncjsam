@@ -1,0 +1,69 @@
+ncjsam: '0.1'
+package: materials
+application:
+    meta-info:
+        authors:
+          - Igor Berezniak
+        title: Collection of materials
+        version: '1.0'
+        description: |
+            A demonstration of possible materials constructors.
+    render:
+        debug-physics: false
+    window:
+        title: 'Materials'
+        mode: windowed
+        resizable: true
+entities:
+  - Subtree: the-root-scene
+    public: false
+    children:
+      - GridDebug: debug-grid
+      - AmbientLight: ambient-light
+        color: [.3, 0, 0]
+        intensity: .5
+      - PointLight: point-light
+        color: [1, 1, 1]
+        intensity: 1.5
+        transformation:
+            translate: [3.5, 5, 2.5]
+      - PerspectiveCamera: camera
+        fov: 60
+        near: 0.1
+        far: 1000.0
+        transformation:
+            translate: [10, 10, 10]
+        look-at: [0, 0, 0]
+      - BoxView: mesh-basic-cube
+        dimensions: [1, 1, 1]
+        transformation:
+            translate: [0, .5, 0]
+            euler-angles: !js |
+                const heading = Math.cos($.timestamp()) * 5;
+                return new THREE.Euler(0, heading, 0, 'XYZ');
+        material:
+            mesh-basic:
+                wireframe: !js |
+                    const step = Math.round($.timestamp());
+                    return (step % 5) == 0;
+                color: !js |
+                    return new THREE.Color((1 + Math.sin($.timestamp())) / 2,
+                                           (1 + Math.sin($.timestamp() / 2) / 2), 
+                                           (1 + Math.sin($.timestamp() / 4)) / 2);
+
+      - BoxView: line-standard-cube
+        dimensions: [1, 1, 1]
+        transformation:
+            translate: [0, .5, 3]
+            euler-angles: !js |
+                const heading = Math.cos($.timestamp()) * 5;
+                return new THREE.Euler(0, heading, 0, 'XYZ');
+        material:
+            mesh-standard:
+                color: !js |
+                    return new THREE.Color((1 + Math.sin($.timestamp())) / 2,
+                                           (1 + Math.sin($.timestamp() / 2) / 2), 
+                                           (1 + Math.sin($.timestamp() / 4)) / 2);
+                roughness: !js return (1 + Math.sin($.timestamp()*10.0)) * 0.5;
+                metalness: !js return (1 + Math.sin($.timestamp()*5.0)) * 0.5;
+                map: 'test-image.png'

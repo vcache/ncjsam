@@ -1,0 +1,72 @@
+ncjsam: '0.1'
+package: events
+application:
+    meta-info:
+        authors:
+          - Igor Berezniak
+        title: Usage of events and states
+        version: '1.0'
+        description: |
+            This simple application demonstrates usage of events and variable.
+    render:
+        debug-physics: false
+    window:
+        title: Events and states
+        mode: windowed
+        resizable: true
+entities:
+  - Subtree: the-root-scene
+    public: false
+    children:
+      - GridDebug: debug-grid
+      - PointLight: point-light
+        color: [1, 1, 1]
+        intensity: 2.5
+        transformation: 
+            translate: [0, 10, 0]
+      - Variable: items-count
+        default-value: 0
+      - Trigger: on-key
+        events: ['wheel']
+        action: !js |
+            $['/events/the-root-scene/items-count'].value += args.deltaY > 0 ? -1 : 1;
+            if ($['/events/the-root-scene/items-count'].value < 0) {
+                $['/events/the-root-scene/items-count'].value = 0;
+            }
+
+      - Map: map-test
+        data: !js |
+            const result = {}
+            const count = $['/events/the-root-scene/items-count'].value;
+            for(var i = 0; i < count; i++) {
+                result[i] = i * (2 * Math.PI) / count;
+            }
+            return result
+        update: !js |
+            const count = $['/events/the-root-scene/items-count'].value;
+            if (!this.last_count || this.last_count != count) {
+                this.last_count = count;
+                return true;
+            }
+            return false;
+        variable: kek
+        element:
+            Subtree: inner-root
+            children:
+              - BoxView: __not_used
+                dimensions: [1, 1, 1]
+                transformation:
+                    translate: !js |
+                        const shift = this.kek;
+                        const x = Math.cos(shift + $.timestamp()) * 2.0;
+                        const z = Math.sin(shift + $.timestamp()) * 2.0;
+                        const result = new THREE.Vector3(x, 0, z);
+                        return result
+
+      - PerspectiveCamera: camera
+        fov: 60
+        near: 0.1
+        far: 1000.0
+        transformation:
+            translate: [10, 10, 10]
+        look-at: [0, 0, 0]

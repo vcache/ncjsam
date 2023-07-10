@@ -1,0 +1,120 @@
+ncjsam: '0.1'
+package: raycasting
+application:
+    meta-info:
+        authors:
+          - Igor Berezniak
+        title: Raycasting example
+        version: '1.0'
+        description: Example of raycasting.
+    render:
+        debug-physics: false
+    window:
+        title: 'Raycasting Example'
+        mode: windowed
+        resizable: true
+entities:
+  - GridDebug: debug-grid
+  - AmbientLight: ambient-light
+    color: [.3, .3, .3]
+    intensity: .5
+
+  - Variable: selected
+    default-value: null
+  - Trigger: pointer
+    events: ['pointermove']
+    action: !js |
+        const selectables = ['item1', 'item2', 'item3', 'item4', 'item5', 'item6'];
+
+        const intersections = $.pointerIntersections();
+        for(var i in intersections) {
+            const userData = intersections[i].object.userData;
+            if (userData && 'treeNode' in userData) {
+                const entityId = userData.treeNode.getEntityId();
+                if (selectables.includes(entityId)) {
+                    $['/raycasting/selected'].value = entityId;
+                    return;
+                }
+            }
+
+        }
+
+        $['/raycasting/selected'].value = null;
+
+  - BoxView: item1
+    dimensions: [1, 1, 1]
+    transformation:
+        translate: [1, 0, 1]
+        scale: !js |
+            return $['/raycasting/selected'].value == this.getEntityId() ? new THREE.Vector3(1.5, 1.5, 1.5)
+                                                                         : new THREE.Vector3(1, 1, 1);
+
+  - SphereView: item2
+    radius: .5
+    transformation:
+        translate: [-1, 0, -1]
+        scale: !js |
+            return $['/raycasting/selected'].value == this.getEntityId() ? new THREE.Vector3(1.5, 1.5, 1.5)
+                                                                         : new THREE.Vector3(1, 1, 1);
+
+  - CapsuleView: item3
+    radius: .5
+    length: 1
+    transformation:
+        translate: [-1, 0, 1]
+        scale: !js |
+            return $['/raycasting/selected'].value == this.getEntityId() ? new THREE.Vector3(1.5, 1.5, 1.5)
+                                                                         : new THREE.Vector3(1, 1, 1);
+
+  - CylinderView: item4
+    top-radius: .2
+    bottom-radius: .5
+    height: 1
+    transformation:
+        translate: [1, 0, -1]
+        scale: !js |
+            return $['/raycasting/selected'].value == this.getEntityId() ? new THREE.Vector3(1.5, 1.5, 1.5)
+                                                                         : new THREE.Vector3(1, 1, 1);
+
+  - ConeView: item5
+    radius: .5
+    height: 1
+    transformation:
+        translate: [0, 0, 0]
+        scale: !js |
+            return $['/raycasting/selected'].value == this.getEntityId() ? new THREE.Vector3(1.5, 1.5, 1.5)
+                                                                         : new THREE.Vector3(1, 1, 1);
+
+  - MeshView: item6
+    filename: 'mesh.glb'
+    transformation:
+        translate: [0, 2, 0]
+        scale: !js |
+            const scale = .1 + (1 + Math.cos($.timestamp() / 2)) * .4;
+            return new THREE.Vector3(scale, scale, scale);
+        axis-angle: !js |
+            if ($['/raycasting/selected'].value == this.getEntityId()) {
+                const phase = Math.sin($.timestamp() * 3) * 2.0;
+                return new THREE.Vector4(1, 1, 1, phase);
+            }
+            return new THREE.Vector4(1, 1, 1, 0);
+
+
+  - PerspectiveCamera: camera
+    fov: 60
+    near: 0.1
+    far: 1000.0
+    transformation:
+        translate: [10, 10, 10]
+    look-at: [0, 0, 0]
+  - OrbitControls: controls
+
+  - PointLight: point-light
+    color: [1, 1, 1]
+    intensity: 1.5
+    transformation:
+        translate: !js |
+            const x = Math.cos($.timestamp() / 2) * 2.0;
+            const z = Math.sin($.timestamp() / 2) * 2.0;
+            const result = new THREE.Vector3(x, 5, z);
+            return result

@@ -1,0 +1,103 @@
+ncjsam: '0.1'
+package: gui
+application:
+    meta-info:
+        authors:
+          - Igor Berezniak
+        title: Gui
+        version: '1.0'
+        description: A GUI example.
+    render:
+        debug-physics: false
+    window:
+        title: 'GUI Example'
+        mode: windowed
+        resizable: true
+entities:
+  - GridDebug: debug-grid
+  - BoxView: some-box
+    dimensions: [1, 1, 1]
+  - AmbientLight: ambient-light
+    color: [.3, .3, .3]
+    intensity: .5
+  - PointLight: point-light
+    color: [1, 1, 1]
+    intensity: .5
+    transformation:
+        translate: [5, 5, -5]
+  - PerspectiveCamera: camera
+    fov: 60
+    near: 0.1
+    far: 1000.0
+    transformation:
+        translate: [10, 10, 10]
+    look-at: [0, 0, 0]
+  - OrbitControls: controls
+
+  - GuiRectangle: abs-pos-abs-size-rectangle
+    background: blue
+    border: 1px red solid
+    layout:
+        x: 50px
+        y: !js return '50px'
+        width: 100px
+        height: 100px
+
+  - GuiRectangle: rel-pos-rectangle
+    background: blue
+    border: 1px red solid
+    layout:
+        x: 100%
+        y: !js return '100%'
+        width: 50px
+        height: 50px
+
+  - GuiRectangle: rel-size-rectangle
+    background: blue
+    border: 1px red solid
+    layout:
+        x: 100%
+        y: !js return '50%'
+        width: 10%
+        height: 10%
+
+  - GuiRectangle: margin-test
+    background: black
+    border: 1px white solid
+    layout:
+        x: 0%
+        y: 50%
+        width: 50px
+        height: 50px
+        margin:
+            left: 10
+            top: 10
+
+  - GuiRectangle: image-test
+    background:  url('./sprite.png')
+    layout:
+        x: 0%
+        y: 100%
+        width: 64px
+        height: 64px
+
+  - GuiRectangle: complex-content
+    background: rgba(1, 1, 1, .7)
+    border: 1px yellow solid
+    layout:
+        x: 50%
+        y: 50%
+        width: 50%
+        height: 20%
+    catch-input: true
+    html: !js |
+        return `
+          <div style="background: blue; color: white">
+            Foo Bar
+          </div>
+          <button>Do this</button>
+          <button>Do that</button>
+          <div style="color: yellow; font-family: mono">
+          ${ $.timestamp() }         
+          </div>
+        `

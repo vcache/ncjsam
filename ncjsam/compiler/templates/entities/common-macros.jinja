@@ -1,0 +1,75 @@
+    {% set dynamic_properties_names = iter.properties
+                                    | items
+                                    | select('ncjsam_dynamic_property')
+                                    | map(attribute=0)
+                                    | list %}
+    {% set has_dynamic_properties = dynamic_properties_names | length > 0 %}
+
+
+    {% macro property_evaluation_code(value) -%}
+    {%- if value is undefined %}
+        return null; /* NOT DEFINED */
+    {%- elif value['vector2d'] is defined -%}
+        return new THREE.Vector2({{ value['vector2d'] | join(', ') }});
+    {%- elif value['vector3d'] is defined -%}
+        return new THREE.Vector3({{ value['vector3d'] | join(', ') }});
+    {%- elif value['rgb'] is defined -%}
+        return new THREE.Color({{ value['rgb'] | join(', ') }});
+    {%- elif value['euler-angles'] is defined -%}
+        return new THREE.Euler({{ value['euler-angles'] | join(', ') }}, 'XYZ');
+    {%- elif value['axis-angle'] is defined -%}
+        return new THREE.Vector({{ value['axis-angle'] | slice(3) | join(', ') }}), {{ value['axis-angle'][3] }});
+    {%- elif value['quaternion'] is defined -%}
+        return new THREE.Quaternion({{ value['quaternion'] | join(', ') }});
+    {%- elif value['filename'] is defined -%}
+        return this._assetsManager.getAsset('{{ value['filename'] }}');
+    {%- elif value['expr'] -%}
+        {{ value['expr'] -}}
+    {%- else -%}
+        return {{ value -}};
+    {%- endif %}
+    {%- endmacro %}
+
+
+    {% macro generate_properties() -%}
+    {% for key, value in iter.properties | dictsort %}
+    evalProperty__{{ key }}() {  // property is {{ 'dynamic' if (key in dynamic_properties_names) else 'static' }}
+        {{ property_evaluation_code(value) | indent(8) }}
+    }
+    {% endfor %}
+    {%- endmacro %}
+
+
+    {# TODO: could inline constant values without creating function and a call to it #}
+    {% macro eval_prop(name) -%}this.evalProperty__{{ name }}(){%- endmacro %}
+
+
+    {% macro generate_materials() -%}
+    {% if iter.material is defined %}
+    buildMaterial() {
+        return new THREE.{{ iter.material.three_class }}({
+            {% for prop_key, prop_value in iter.material.properties | dictsort %}
+            {{ prop_key }}: (() => {
+                {{ property_evaluation_code(prop_value) | indent(16) }}
+            })(),
+            {% endfor %}
+        });
+    }
+
+    {% set dynamic_material_properties_names = iter.material.properties
+                                             | items
+                                             | select('ncjsam_dynamic_property')
+                                             | map(attribute=0)
+                                             | list %}
+
+    recalcMaterialProps(target) {
+        {% for prop_key, prop_value in iter.material.properties | dictsort %}
+        {% if prop_key in dynamic_material_properties_names %}
+        target.{{ prop_key }} = (() => {
+            {{ property_evaluation_code(prop_value) | indent(12) }}
+        })();
+        {% endif %}
+        {% endfor %}
+    }
+    {% endif %}
+    {%- endmacro %}

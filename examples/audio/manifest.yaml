@@ -1,0 +1,63 @@
+ncjsam: '0.1'
+package: audio
+application:
+    meta-info:
+        authors:
+          - Igor Berezniak
+        title: Audio example
+        version: '1.0'
+        description: |
+            Example of an Audio element usage.
+    render:
+        debug-physics: false
+    window:
+        title: 'Audio Example'
+        mode: windowed
+        resizable: true
+entities:
+  # TODO: due to a bug, a Variable must be defined before any usage,
+  #       otherwise an undefined value will be readen
+  - Variable: volume
+    default-value: .7
+  - Trigger: on-key
+    events: ['wheel']
+    action: !js |
+        $['/audio/volume'].value += -Math.sign(args.deltaY) * .05;
+        $['/audio/volume'].value = Math.min(Math.max($['/audio/volume'].value, 0), 1)
+        console.log('volume changed: ', $['/audio/volume'].value);
+
+  - Audio: background-music
+    public: false
+    filename: './TownTheme.mp3'
+    visible: !js return $['/audio/background-music-enabled'].value
+    resumable: true
+    loop: true
+    volume: !js return $['/audio/volume'].value
+  - Variable: background-music-enabled
+    default-value: false
+  - Trigger: background-music-toggler
+    events: [keydown]
+    condition: !js return this.event.args.key.toLowerCase() == 'm'
+    action: !js |
+        $['/audio/background-music-enabled'].value = !$['/audio/background-music-enabled'].value
+        console.log('background music toggled: ', $['/audio/background-music-enabled'].value);
+
+  - Trigger: puncher
+    events: [keydown]
+    condition: !js |
+        const filter = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+        return filter.includes(this.event.args.key);
+    action: !js
+        const volume = $['/audio/volume'].value;
+        const key = this.event.args.key;
+        const filename = `./independent_nu_ljudbank-hits_and_punches/hit0${key}.mp3`;
+        $.play(filename, volume);
+
+  # TODO: A prescense of a Camera is mandatory to run main loop
+  - PerspectiveCamera: camera
+    fov: 60
+    near: 0.1
+    far: 1000.0
+    transformation:
+        translate: [10, 10, 10]
+    look-at: [0, 0, 0]

@@ -1,0 +1,44 @@
+ncjsam: '0.1'
+package: controls
+application:
+    meta-info:
+        authors:
+          - Igor Berezniak
+        title: Controls example
+        version: '1.0'
+        description: |
+            Example of camera controls usage.
+    render:
+        debug-physics: false
+    window:
+        title: 'Controls Example'
+        mode: windowed
+        resizable: true
+entities:
+  - Subtree: the-root-scene
+    public: false
+    children:
+      - GridDebug: debug-grid
+      - BoxView: sample-box
+        dimensions: [1, 1, 1]
+      - AmbientLight: ambient-light
+        color: [.3, .3, .3]
+        intensity: .5
+      - PointLight: point-light
+        color: [1, 1, 1]
+        intensity: 1.5
+        transformation:
+            translate: !js |
+                const x = Math.cos($.timestamp() / 5) * 2.0;
+                const z = Math.sin($.timestamp() / 5) * 2.0;
+                const result = new THREE.Vector3(x, 10, z);
+                return result
+  # NOTE: in order to use Controls, a camera must be a child of scene directly!
+  - PerspectiveCamera: camera
+    fov: 60
+    near: 0.1
+    far: 1000.0
+    transformation:
+        translate: [10, 10, 10]
+    look-at: [0, 0, 0]
+  - OrbitControls: controls

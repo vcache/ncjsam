@@ -1,0 +1,8 @@
+**/_pycache__
+*.py[cod]
+.deprecated
+manifest.yaml.todo
+rethink
+rethink-mods.yaml
+roadmap
+whatever

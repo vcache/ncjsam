@@ -1,0 +1,94 @@
+ncjsam: '0.1'
+package: hello-world
+application:
+    meta-info:
+        authors:
+          - Igor Berezniak
+        title: Static Single Cube
+        version: '1.0'
+        description: |
+            This simple application just demonstrates a mimimal flow.
+    render:
+        debug-physics: false
+    window:
+        title: 'Hello world'
+        mode: windowed
+        resizable: true
+entities:
+  - Subtree: the-root-scene
+    public: false
+    children:
+      - GridDebug: debug-grid
+      - MeshView: some-box
+        filename: 'mesh.glb'
+        transformation:
+            translate: !js |
+                const phase = (1 + Math.sin($.timestamp())) * 2.0;
+                return new THREE.Vector3(0, phase, 0);
+            axis-angle: !js |
+                const phase = Math.sin($.timestamp() * 3) * 2.0;
+                return new THREE.Vector4(1, 1, 1, phase);
+      - Map: map-test
+        #{'foo': {index: 0, shift: 0, total: 3},
+        # 'buz': {index: 1, shift: 2.0943951023931953, total: 3},
+        # 'bar': {index: 2, shift: 4.1887902047863905, total: 3}
+        data: !js |
+            const time_bucket = Math.round($.timestamp()) % 120
+            const result = {}
+            for(var i = 0; i < time_bucket; i++) {
+                result[i] = {
+                    index: i,
+                    shift: i * (2 * Math.PI) / time_bucket,
+                    total: time_bucket
+                };
+            }
+            return result
+        update: !js |
+            const time_bucket = Math.round($.timestamp()) % 120
+            if (!this.time_bucket || this.time_bucket != time_bucket) {
+                this.time_bucket = time_bucket;
+                return true;
+            }
+            return false;
+        variable: kek
+        element:
+            Subtree: inner-root
+            children:
+              - BoxView: __not_used
+                dimensions: [1, 1, 1]
+                transformation:
+                    translate: !js |
+                        const shift = this.kek.shift;
+                        const x = Math.cos(shift + $.timestamp()) * 2.0;
+                        const y = 1 + Math.sin(
+                            (this.kek.index / this.kek.total) * Math.PI * .1 * $.timestamp()
+                        )
+                        const z = Math.sin(shift + $.timestamp()) * 2.0;
+                        const result = new THREE.Vector3(x, y, z);
+                        return result
+ 
+#      - PlaneView: ground-plane
+#        dimensions: [5, 5]
+#        transformation:
+#            rotate:
+#                euler-angles: [1.5707963267948966, 0, 0]  # TODO: implement static expressions (for PI/2)
+      - AmbientLight: ambient-light
+        color: [.3, .3, .3]
+        intensity: .5
+      - PointLight: point-light
+        color: [1, 1, 1]
+        intensity: 1.5
+        transformation:
+            translate: !js |
+                const x = Math.cos($.timestamp() / 5) * 2.0;
+                const z = Math.sin($.timestamp() / 5) * 2.0;
+                const result = new THREE.Vector3(x, 10, z);
+                return result
+  - PerspectiveCamera: camera
+    fov: 60
+    near: 0.1
+    far: 1000.0
+    transformation:
+        translate: [10, 10, 10]
+    look-at: [0, 0, 0]
+  - OrbitControls: controls

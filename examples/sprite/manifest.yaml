@@ -1,0 +1,118 @@
+ncjsam: '0.1'
+package: sprites
+application:
+    meta-info:
+        authors:
+          - Igor Berezniak
+        title: Sprites Example
+        version: '1.0'
+        description: |
+            A demonstration of sprites usage.
+    render:
+        debug-physics: false
+    window:
+        title: 'Sprites Example'
+        mode: windowed
+        resizable: true
+entities:
+  - GridDebug: debug-grid
+  - Subtree: box-with-text
+    transformation:
+        translate: !js |
+            const x = 10 + Math.cos($.timestamp() / 2) * 2.0;
+            const z = Math.sin($.timestamp() / 2) * 2.0;
+            const result = new THREE.Vector3(z, 1, x);
+            return result            
+    children:
+      - MeshView: some-box
+        filename: 'mesh.glb'
+      - TextSprite: label-2d
+        mode: 2d
+        text: !js |
+            return `2d text bar: ${$.timestamp()}`
+        style: |
+            font-family: monospace;
+            font-size: 10px;
+            color: #EEEEEE;
+            background: #444444;
+            padding: 5px;
+            border: 1px yellow solid;
+        transformation:
+            translate: [0, -2, 0]
+      - TextSprite: label-3d
+        mode: 3d
+        text: !js |
+            return `3d text bar: ${$.timestamp()}`
+        style: |
+            font-family: monospace;
+            font-size: 10px;
+            color: #EEEEEE;
+            background: #444444;
+            padding: 5px;
+            border: 1px yellow solid;
+        transformation:
+            translate: [0, 2, 0]
+            scale: [.05, .05, .05]
+      - TextSprite: label-3d-faced
+        mode: 3d-faced
+        text: !js |
+            return `3d text bar: ${$.timestamp()}`
+        style: |
+            font-family: monospace;
+            font-size: 10px;
+            color: #EEEEEE;
+            background: #444444;
+            padding: 5px;
+            border: 1px yellow solid;
+        transformation:
+            translate: [0, 0, 0]
+            scale: [.05, .05, .05]
+
+  - Subtree: box-with-image
+    transformation:
+        translate: !js |
+            const x = - 10 + Math.cos($.timestamp() / 2) * 2.0;
+            const z = Math.sin($.timestamp() / 2) * 2.0;
+            const result = new THREE.Vector3(x, 1, z);
+            return result            
+    children:
+      - MeshView: some-box-2
+        filename: 'mesh.glb'
+      - ImageSprite: image-2d
+        mode: 2d
+        src: 'sprite.png'
+        transformation:
+            translate: [0, -2, 0]
+      - ImageSprite: image-3d
+        mode: 3d
+        src: 'sprite.png'
+        transformation:
+            translate: [0, 2, 0]
+            scale: [.05, .05, .05]
+      - ImageSprite: image-3d-faced
+        mode: 3d-faced
+        src: 'sprite.png'
+        transformation:
+            translate: [0, 0, 0]
+            scale: [.05, .05, .05]
+
+  - AmbientLight: ambient-light
+    color: [.3, .3, .3]
+    intensity: .5
+  - PointLight: point-light
+    color: [1, 1, 1]
+    intensity: 1.5
+    transformation:
+        translate: !js |
+            const x = Math.cos($.timestamp() / 5) * 2.0;
+            const z = Math.sin($.timestamp() / 5) * 2.0;
+            const result = new THREE.Vector3(x, 10, z);
+            return result
+  - PerspectiveCamera: camera
+    fov: 60
+    near: 0.1
+    far: 1000.0
+    transformation:
+        translate: [10, 10, 10]
+    look-at: [0, 0, 0]
+  - OrbitControls: controls

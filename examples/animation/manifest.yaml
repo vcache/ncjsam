@@ -1,0 +1,69 @@
+ncjsam: '0.1'
+package: animation
+application:
+    meta-info:
+        authors:
+          - Igor Berezniak
+        title: Animation example
+        version: '1.0'
+        description: |
+            An application to demonstrate a usage of animations.
+    render:
+        debug-physics: false
+    window:
+        title: 'Animation'
+        mode: windowed
+        resizable: true
+entities:
+  - GridDebug: debug-grid
+
+
+  - MeshView: sample
+    filename: 'sample.glb'
+    transformation:
+        translate: [0, 0, -2]
+  - Trigger: click
+    events: [pointerdown]
+    action: !js $['/animation/sample'].playAnimation('Animation');
+
+
+  - MeshView: another-sample
+    filename: 'sample.glb'
+    transformation:
+        translate: [0, 0, 2]
+  - Trigger: ketdown
+    events: [keydown]
+    action: !js $['/animation/another-sample'].playAnimation('Animation');
+
+
+  - MeshView: automatic-sample
+    filename: 'sample.glb'
+    animation: !js |
+        const phase = Math.floor($.timestamp()/5) % 2;
+        return phase == 0 ? 'Animation' : null;
+    transformation:
+        translate: [0, 0, 0]
+
+
+  - AmbientLight: ambient-light
+    color: [.3, .3, .3]
+    intensity: .5
+  - PointLight: point-light
+    color: [1, 1, 1]
+    intensity: 1.5
+    transformation:
+        translate: !js |
+            const x = Math.cos($.timestamp() / 5) * 2.0;
+            const z = Math.sin($.timestamp() / 5) * 2.0;
+            const result = new THREE.Vector3(x, 10, z);
+            return result
+
+
+  - PerspectiveCamera: camera
+    fov: 60
+    near: 0.1
+    far: 1000.0
+    transformation:
+        translate: [10, 10, 10]
+    look-at: [0, 0, 0]
+  - OrbitControls: controls
