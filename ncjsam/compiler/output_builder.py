@@ -87,7 +87,10 @@ def make_output(compiled_modules: CompiledModules,
 
         # Minify and add contrib files
         for contrib in CONTRIB_JS:
-            effective_minify_js = minify_js and 'wasm' not in contrib
+            effective_minify_js = (
+                minify_js and 'wasm' not in contrib
+                and 'es-module-shims.js' not in contrib
+            )
             minified_name = (
                 _minified_name(contrib) if effective_minify_js else contrib
             )
