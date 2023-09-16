@@ -1,9 +1,11 @@
 from dataclasses import dataclass, asdict
 from typing import Union, Optional
+from enum import Enum
 
 from ncjsam.model.etc import Path
 from ncjsam.model.etc import UnJson
 from ncjsam.etc.strings import snake_to_camel
+from ncjsam.model.types import Expr
 from ncjsam.model.types import RgbColor
 from ncjsam.model.types import Vector2
 from ncjsam.model.types import Texture
@@ -13,6 +15,49 @@ from ncjsam.model.types import type_dyn_num
 from ncjsam.model.types import type_dyn_str
 from ncjsam.model.types import type_dyn_vector2
 from ncjsam.model.types import render_property
+
+
+class Side(Enum):
+    FRONT = 1
+    BACK = 2
+    DOUBLE = 3
+
+    @staticmethod
+    def deserialize(data):
+        return Side[data.upper()]
+
+    def compile(self):
+        return f'THREE.{self.name.capitalize()}Side'
+
+
+class NormalMapSpaceType(Enum):
+    TANGENT = 1
+    OBJECT = 2
+
+    @staticmethod
+    def deserialize(data):
+        return NormalMapSpaceType[data.upper()]
+
+    def compile(self):
+        return f'THREE.{self.name.capitalize()}SpaceNormalMap'
+
+
+class Combine(Enum):
+    MULTIPLY = 1
+    MIX = 2
+    ADD = 3
+
+    @staticmethod
+    def deserialize(data):
+        return Combine[data.upper()]
+
+    def compile(self):
+        return f'THREE.{self.name.capitalize()}Operation'
+
+
+type_dyn_side = Union[Expr, Side]
+type_dyn_normal_map_space = Union[Expr, NormalMapSpaceType]
+type_dyn_combine = Union[Expr, Combine]
 
 
 @dataclass
@@ -36,7 +81,9 @@ class _LineBasicMaterial(_LineCommon):
     @staticmethod
     def deserialize(data):
         # TODO: move into a base class
-        return (UnJson(data).replace('map', Texture.deserialize)
+        return (UnJson(data).replace('color', RgbColor.deserialize,
+                                     cond=RgbColor.match)
+                            .replace('map', Texture.deserialize)
                             .done(_LineBasicMaterial))
 
     def get_assets(self):
@@ -58,7 +105,9 @@ class _LineDashedMaterial(_LineCommon):
     @staticmethod
     def deserialize(data):
         # TODO: move into a base class
-        return (UnJson(data).replace('map', Texture.deserialize)
+        return (UnJson(data).replace('color', RgbColor.deserialize,
+                                     cond=RgbColor.match)
+                            .replace('map', Texture.deserialize)
                             .done(_LineDashedMaterial))
 
     def get_assets(self):
@@ -71,7 +120,7 @@ class _MeshBasicMaterial:
     ao_map: Optional[Texture] = None
     ao_map_intensity: Optional[type_dyn_num] = 1
     color: Optional[type_dyn_rgb] = RgbColor(1, 1, 1)
-    combine: Optional[type_dyn_str] = 'multiply'
+    combine: Optional[type_dyn_combine] = Combine.MULTIPLY
     env_map: Optional[Texture] = None
     fog: Optional[type_dyn_bool] = True
     light_map: Optional[Texture] = None
@@ -95,6 +144,10 @@ class _MeshBasicMaterial:
     def deserialize(data):
         return (UnJson(data).replace('alpha-map', Texture.deserialize)
                             .replace('ao-map', Texture.deserialize)
+                            .replace('color', RgbColor.deserialize,
+                                     cond=RgbColor.match)
+                            .replace('combine', Combine.deserialize,
+                                     cond=lambda x: type(x) == str)
                             .replace('env-map', Texture.deserialize)
                             .replace('light-map', Texture.deserialize)
                             .replace('map', Texture.deserialize)
@@ -129,7 +182,9 @@ class _MeshStandardMaterial:
     metalness: Optional[type_dyn_num] = 0.0
     metalness_map: Optional[Texture] = None
     normal_map: Optional[Texture] = None
-    normal_map_type: Optional[type_dyn_str] = 'tangent-space'
+    normal_map_type: Optional[type_dyn_normal_map_space] = (
+        NormalMapSpaceType.TANGENT
+    )
     normal_scale: Optional[type_dyn_vector2] = Vector2(1, 1)
     roughness: Optional[type_dyn_num] = 1.0
     roughness_map: Optional[Texture] = None
@@ -148,13 +203,22 @@ class _MeshStandardMaterial:
     def deserialize(data):
         return (UnJson(data).replace('alpha-map', Texture.deserialize)
                             .replace('bump-map', Texture.deserialize)
+                            .replace('color', RgbColor.deserialize,
+                                     cond=RgbColor.match)
                             .replace('displacement-map', Texture.deserialize)
+                            .replace('emissive', RgbColor.deserialize,
+                                     cond=RgbColor.match)
                             .replace('emissive-map', Texture.deserialize)
                             .replace('env-map', Texture.deserialize)
                             .replace('light-map', Texture.deserialize)
                             .replace('map', Texture.deserialize)
                             .replace('metalness-map', Texture.deserialize)
                             .replace('normal-map', Texture.deserialize)
+                            .replace('normal-map-type',
+                                     NormalMapSpaceType.deserialize,
+                                     cond=lambda x: type(x) == str)
+                            .replace('normal-scale', Vector2.deserialize,
+                                     cond=Vector2.match)
                             .replace('roughness-map', Texture.deserialize)
                             .done(_MeshStandardMaterial))
 
@@ -168,7 +232,7 @@ class Material:
     depth_test: Optional[type_dyn_bool] = True
     depth_write: Optional[type_dyn_bool] = True
     alpha_test: Optional[type_dyn_num] = 0
-    side: Optional[type_dyn_str] = 'front'
+    side: Optional[type_dyn_side] = Side.FRONT
     material: Union[
         _LineBasicMaterial,
         _LineDashedMaterial,
@@ -188,6 +252,7 @@ class Material:
     def deserialize(data):
         return (
             UnJson(data)
+            .replace('side', Side.deserialize, cond=lambda x: type(x) == str)
             .replace('line-basic', _LineBasicMaterial.deserialize,
                      key_rewrite='material')
             .replace('line-dashed', _LineDashedMaterial.deserialize,

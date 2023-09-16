@@ -47,13 +47,14 @@
     {% macro generate_materials() -%}
     {% if iter.material is defined %}
     buildMaterial() {
-        return new THREE.{{ iter.material.three_class }}({
+        const parameters = {
             {% for prop_key, prop_value in iter.material.properties | dictsort %}
             {{ prop_key }}: (() => {
                 {{ property_evaluation_code(prop_value) | indent(16) }}
             })(),
             {% endfor %}
-        });
+        };
+        return new THREE.{{ iter.material.three_class }}(parameters);
     }
 
     {% set dynamic_material_properties_names = iter.material.properties

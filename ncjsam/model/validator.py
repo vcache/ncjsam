@@ -61,7 +61,7 @@ def _always_true(data):
 
 
 def _side(data):
-    FILTER = ('front', 'back', 'side')
+    FILTER = ('front', 'back', 'double')
     if not (data.lower() in FILTER):
         raise Invalid(f'unexpected material side constant: "{data}", '
                       f'allowed values are {FILTER}')
@@ -93,7 +93,7 @@ def _combine(data):
 
 
 def _normal_map_type(data):
-    FILTER = ('tangent-space', 'object-space')
+    FILTER = ('tangent', 'object')
     if not (data.lower() in FILTER):
         raise Invalid(f'unexpected material normal map type constant: '
                       f'"{data}", allowed values are {FILTER}')
@@ -334,6 +334,10 @@ _entity_schema = Schema(Any(
     }),
 
     # Views
+    _make_common_node('PlaneView', {
+        Required('dimensions'): _dyn_vector2,
+        Optional('material'): _dyn_material,
+    }),
     _make_common_node('BoxView', {
         Required('dimensions'): _dyn_vector3,
         Optional('material'): _dyn_material,
