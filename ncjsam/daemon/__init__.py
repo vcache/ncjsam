@@ -10,6 +10,7 @@ from ncjsam.tool.builder import run_build
 
 
 NCJSAM_HTTP_PREFIX = '__ncjsam__'
+NCJSAM_CLIENT_MAX_SIZE = 1024 * 1024 * 1024 * 64  # 64 MBytes
 
 
 # TODO: add version to handle race conditions
@@ -52,7 +53,7 @@ class LiveServer:
 
         dist_prefix = eval_dist_path(args.prefix, args.destination)
 
-        self._app = web.Application()
+        self._app = web.Application(client_max_size=NCJSAM_CLIENT_MAX_SIZE)
         self._app.add_routes([
             web.get('/', self._index),
             web.get(f'/{NCJSAM_HTTP_PREFIX}/code-revision',
