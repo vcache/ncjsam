@@ -25,6 +25,10 @@ class {{ iter.class_name }} extends EntityBase {
             %}
                 this.recalcLayout();
             {% endif %}
+
+            {% if 'border' in common.dynamic_properties_names %}
+                this._domElement.style.border = {{ common.eval_prop('border') }};
+            {% endif %}
         }
     }
 

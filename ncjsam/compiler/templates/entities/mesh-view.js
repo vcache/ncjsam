@@ -11,10 +11,9 @@ class {{ iter.class_name }} extends EntityBase {
             {% if 'filename' in common.dynamic_properties_names %}
             const filename = {{ common.eval_prop('filename') }};
             if (filename != this._filename) {
-                const viewContainer = this._mesh.parent;
                 this.onUnmerge();
                 this._filename = filename;
-                this.onEmerge(viewContainer, null);
+                this.onEmerge(this._viewContainer, null);
             }
             {% endif %}
 
@@ -65,49 +64,56 @@ class {{ iter.class_name }} extends EntityBase {
 
     onEmerge(viewContainer, guiContainer) {
         super.onEmerge(viewContainer, guiContainer);
-        if (!this._filename) this._filename = {{ common.eval_prop('filename') }};
-        const asset = this._assetsManager.getAsset(this._filename);
-        if (!asset) throw Error(`no such mesh: ${this._filename}`)
-        this._scene = asset.scene.clone();
+        this._viewContainer = viewContainer;
+        if (this._visible) {
+            if (!this._filename) this._filename = {{ common.eval_prop('filename') }};
+            const asset = this._assetsManager.getAsset(this._filename);
+            if (!asset) throw Error(`no such mesh: ${this._filename}`)
+            this._scene = asset.scene.clone();
 
-        this._scene.userData = {
-            'treeNode': this,
-        }
-        for(var i in this._scene.children) {
-            this._scene.children[i].userData = {
+            this._scene.userData = {
                 'treeNode': this,
             }
-        }
+            for(var i in this._scene.children) {
+                this._scene.children[i].userData = {
+                    'treeNode': this,
+                }
+            }
 
-        this._scene.visible = this._visible;
-        if (viewContainer) { // TODO: move to base class
-            viewContainer.add(this._scene);
-        }
-        this.setTransformer(new {{ iter.class_name }}_Transformer(this._scene, this));
+            this._scene.visible = this._visible;
+            if (viewContainer) { // TODO: move to base class
+                viewContainer.add(this._scene);
+            }
+            this.setTransformer(new {{ iter.class_name }}_Transformer(this._scene, this));
 
-        // NOTE: disable "Group by NLA Track"
-        if (asset.animations.length > 0) {
-            this._mixer = new THREE.AnimationMixer(this._scene);
-            this._animations = asset.animations;
-        } else {
-            this._mixer = null;
-        }
+            // NOTE: disable "Group by NLA Track"
+            if (asset.animations.length > 0) {
+                this._mixer = new THREE.AnimationMixer(this._scene);
+                this._animations = asset.animations;
+            } else {
+                this._mixer = null;
+            }
 
-        this._animation = {{ common.eval_prop('animation') }};
-        if (this._animation) {
-            this.playAnimation(this._animation, THREE.LoopRepeat);
+            this._animation = {{ common.eval_prop('animation') }};
+            if (this._animation) {
+                this.playAnimation(this._animation, THREE.LoopRepeat);
+            }
         }
     }
 
     onUnmerge() {
         this._filename = null;
-        this._scene.removeFromParent();
+        if (this._scene) {
+            this._scene.removeFromParent();
+        }
         this._scene = null;
         super.onUnmerge();
     }
 
     onVisibleChanged(visible) {
         super.onVisibleChanged(visible);
-        this._scene.visible = visible;
+        if (this._scene) {
+            this._scene.visible = visible;
+        }
     }
 }

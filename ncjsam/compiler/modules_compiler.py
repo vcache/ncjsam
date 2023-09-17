@@ -70,4 +70,4 @@ def _query_assets(modules: Dict[Path, Module]) -> List[str]:
     result = []
     for _, module in modules.items():
         result.extend(module.get_assets())
-    return sorted(set(result))
+    return sorted(set([i for i in result if type(i) == str]))
