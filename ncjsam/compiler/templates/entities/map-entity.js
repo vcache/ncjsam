@@ -51,7 +51,7 @@ class {{ iter.class_name }} extends EntityBase {
             this._children[key].onEmerge(this._group, this._guiContainer);
         }
 
-        this._data = data;
+        this._data = {...data};
     }
 
     onEmerge(viewContainer, guiContainer) {
