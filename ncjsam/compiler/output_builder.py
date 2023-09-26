@@ -39,6 +39,7 @@ def make_output(compiled_modules: CompiledModules,
         lstrip_blocks=True,
     )
     jinja2_env.tests['ncjsam_dynamic_property'] = _ncjsam_dynamic_property
+    jinja2_env.filters['ncjsam_snake_to_camel'] = _ncjsam_snake_to_camel
 
     assert compiled_modules.application
     cummon_dickt = {
@@ -128,3 +129,9 @@ def _is_older(src: Path, dst: Path):
 # TODO: move it to a proper place
 def _ncjsam_dynamic_property(pair):
     return type(pair[1]) == dict and 'expr' in pair[1]
+
+
+# TODO: move it to a proper place
+def _ncjsam_snake_to_camel(string):
+    parts = string.split('_')
+    return ''.join(parts[0:1] + [i.capitalize() for i in parts[1:]])

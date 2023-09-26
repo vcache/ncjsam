@@ -6,13 +6,13 @@ class {{ iter.class_name }} extends EntityBase {
 
     {% macro update_controls_parameter(name) -%}
     {% if name in common.dynamic_properties_names -%}
-    this._controls.{{ name }} = {{ common.eval_prop(name) }};
+    this._controls.{{ name | ncjsam_snake_to_camel }} = {{ common.eval_prop(name) }};
     {% endif %}
     {%- endmacro %}
 
     {% macro setup_controls_parameter(name) -%}
     {% if name in iter.properties -%}
-    this._controls.{{ name }} = {{ common.eval_prop(name) }};
+    this._controls.{{ name | ncjsam_snake_to_camel }} = {{ common.eval_prop(name) }};
     {% endif %}
     {%- endmacro %}
 
