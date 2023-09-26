@@ -27,6 +27,7 @@ class OrbitControls(Entity):
     pan_speed: type_dyn_num = 1
     rotate_speed: type_dyn_num = 1
     zoom_speed: type_dyn_num = 1
+    screen_space_panning: type_dyn_bool = True
 
     @classmethod
     def deserialize(cls, data):
@@ -56,5 +57,6 @@ class OrbitControls(Entity):
             'pan_speed': render_property(self.pan_speed),
             'rotate_speed': render_property(self.rotate_speed),
             'zoom_speed': render_property(self.zoom_speed),
+            'screen_space_panning': render_property(self.screen_space_panning),
         })
         return result

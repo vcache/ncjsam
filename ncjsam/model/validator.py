@@ -422,6 +422,7 @@ _entity_schema = Schema(Any(
         Optional('pan-speed'): _dyn_num,
         Optional('rotate-speed'): _dyn_num,
         Optional('zoom-speed'): _dyn_num,
+        Optional('screen-space-panning'): _dyn_bool,
     }),
 
     # Audio

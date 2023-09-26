@@ -49,6 +49,7 @@ class {{ iter.class_name }} extends EntityBase {
                 {{ update_controls_parameter('pan_speed') }}
                 {{ update_controls_parameter('rotate_speed') }}
                 {{ update_controls_parameter('zoom_speed') }}
+                {{ update_controls_parameter('screen_space_panning') }}
                 this._controls.update();
             }
         }
@@ -78,6 +79,7 @@ class {{ iter.class_name }} extends EntityBase {
             {{ setup_controls_parameter('pan_speed') }}
             {{ setup_controls_parameter('rotate_speed') }}
             {{ setup_controls_parameter('zoom_speed') }}
+            {{ setup_controls_parameter('screen_space_panning') }}
 
             if (this._pended_restore) {
                 this._controls.target.fromArray(this._pended_restore.target);
