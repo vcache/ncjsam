@@ -32,9 +32,9 @@ class Map(Entity):
             'variable': self.variable,  # NOTE: could be accessed from JS
                                         # with 'this.{{ variable }}'
             'element': {
-                'id': result[0]['id'],
-                'path': result[0]['path'],
-                'class_name': result[0]['class_name'],
+                'id': result[-1]['id'],
+                'path': result[-1]['path'],
+                'class_name': result[-1]['class_name'],
             },
         })
         basic_entity['properties'].update({

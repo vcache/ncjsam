@@ -294,18 +294,18 @@ export class Main {
             }
         }
 
+        // maybe reload state
+        {% if ncjsam_daemon_context is defined %}
+        this._reloadManager = new ReloadManager(this, this._state_id);
+        this._reloadManager.maybe_restore_state();
+        {% endif %}
+
         // init event queue
         this._eventQueue = [{
             'kind': 'ncjsam-init',
             'args': {},
         }];
         this.renewSystemSubscriptions();
-
-        // maybe reload state
-        {% if ncjsam_daemon_context is defined %}
-        this._reloadManager = new ReloadManager(this, this._state_id);
-        this._reloadManager.maybe_restore_state();
-        {% endif %}
     }
 
     renewSystemSubscriptions = () => {
@@ -316,7 +316,7 @@ export class Main {
             'wheel',
             'dblclick',
             'resize',
-            'load',
+            'load', 'DOMContentLoaded',
         ])
         for(const kind of this._subscribedEvents) {
             if (systemEvents.has(kind)) {

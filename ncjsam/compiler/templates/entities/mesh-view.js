@@ -65,6 +65,7 @@ class {{ iter.class_name }} extends EntityBase {
     onEmerge(viewContainer, guiContainer) {
         super.onEmerge(viewContainer, guiContainer);
         this._viewContainer = viewContainer;
+        this._guiContainer = guiContainer;
         if (this._visible) {
             if (!this._filename) this._filename = {{ common.eval_prop('filename') }};
             const asset = this._assetsManager.getAsset(this._filename);
@@ -114,6 +115,9 @@ class {{ iter.class_name }} extends EntityBase {
         super.onVisibleChanged(visible);
         if (this._scene) {
             this._scene.visible = visible;
+        } else {
+            // TODO: this is ugly
+            this.onEmerge(this._viewContainer, this._guiContainer);
         }
     }
 }

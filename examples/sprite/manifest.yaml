@@ -30,7 +30,7 @@ entities:
         mode: 2d
         text: !js |
             return `2d text bar: ${$.timestamp()}`
-        style: |
+        style: |  # NOTE: this is CSS _string_
             font-family: monospace;
             font-size: 10px;
             color: #EEEEEE;
@@ -43,7 +43,7 @@ entities:
         mode: 3d
         text: !js |
             return `3d text bar: ${$.timestamp()}`
-        style: |
+        style: |  # NOTE: this is CSS _string_
             font-family: monospace;
             font-size: 10px;
             color: #EEEEEE;
@@ -57,7 +57,7 @@ entities:
         mode: 3d-faced
         text: !js |
             return `3d text bar: ${$.timestamp()}`
-        style: |
+        style: |  # NOTE: this is CSS _string_
             font-family: monospace;
             font-size: 10px;
             color: #EEEEEE;

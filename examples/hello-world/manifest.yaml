@@ -56,17 +56,19 @@ entities:
             children:
               - BoxView: __not_used
                 dimensions: [1, 1, 1]
-                transformation:
-                    translate: !js |
-                        const shift = this.kek.shift;
-                        const x = Math.cos(shift + $.timestamp()) * 2.0;
-                        const y = 1 + Math.sin(
-                            (this.kek.index / this.kek.total) * Math.PI * .1 * $.timestamp()
-                        )
-                        const z = Math.sin(shift + $.timestamp()) * 2.0;
-                        const result = new THREE.Vector3(x, y, z);
-                        return result
- 
+              - SphereView: __not_used_2
+                radius: .6
+            transformation:
+                translate: !js |
+                    const shift = this.kek.shift;
+                    const x = Math.cos(shift + $.timestamp()) * 2.0;
+                    const y = 1 + Math.sin(
+                        (this.kek.index / this.kek.total) * Math.PI * .1 * $.timestamp()
+                    )
+                    const z = Math.sin(shift + $.timestamp()) * 2.0;
+                    const result = new THREE.Vector3(x, y, z);
+                    return result
+
 #      - PlaneView: ground-plane
 #        dimensions: [5, 5]
 #        transformation:
