@@ -331,6 +331,7 @@ _entity_schema = Schema(Any(
         Optional('distance'): _dyn_num,
         Optional('angle'): _dyn_num,
         Optional('penumbra'): _dyn_num,
+        Optional('target'): _dyn_expr,
     }),
 
     # Views

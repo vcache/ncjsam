@@ -5,6 +5,7 @@ from ncjsam.model.etc import Path
 from ncjsam.model.types import RgbColor
 from ncjsam.model.types import render_property
 from ncjsam.model.types import type_dyn_bool
+from ncjsam.model.types import type_dyn_expr
 from ncjsam.model.types import type_dyn_num
 from ncjsam.model.types import type_dyn_rgb
 from ncjsam.model.module.entity import Entity
@@ -75,6 +76,7 @@ class SpotLight(Entity):
     cast_shadow: type_dyn_bool = False
     angle: type_dyn_num = pi/2
     penumbra: type_dyn_num = 0
+    target: type_dyn_expr = None
 
     @classmethod
     def deserialize(cls, data):
@@ -97,5 +99,6 @@ class SpotLight(Entity):
             'cast_shadow': render_property(self.cast_shadow),
             'angle': render_property(self.angle),
             'penumbra': render_property(self.penumbra),
+            'target': render_property(self.target),
         })
         return result
