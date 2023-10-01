@@ -20,6 +20,7 @@ CONTRIB_JS = [
     'GLTFLoader.js',
     'BufferGeometryUtils.js',
     'OrbitControls.js',
+    'PointerLockControls.js',
     'CSS2DRenderer.js',
     'CSS3DRenderer.js',
 ]

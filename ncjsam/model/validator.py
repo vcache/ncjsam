@@ -425,6 +425,13 @@ _entity_schema = Schema(Any(
         Optional('zoom-speed'): _dyn_num,
         Optional('screen-space-panning'): _dyn_bool,
     }),
+    _make_common_node('PointerLockControls', {
+        Optional('is-locked'): _dyn_bool,
+        Optional('max-polar-angle'): _dyn_num,
+        Optional('min-polar-angle'): _dyn_num,
+        Optional('pointer-speed'): _dyn_num,
+        Optional('target'): _dyn_expr,
+    }),
 
     # Audio
     _make_common_node('Audio', {

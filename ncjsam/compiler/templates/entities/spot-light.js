@@ -32,18 +32,18 @@ class {{ iter.class_name }} extends EntityBase {
                                           {{ common.eval_prop('penumbra') }},
                                           {{ common.eval_prop('decay') }});
         this._light.visible = this._visible;
-        this._spotLightHelper = new THREE.SpotLightHelper(this._light);
+ //       this._spotLightHelper = new THREE.SpotLightHelper(this._light);
         if (viewContainer) {
             viewContainer.add(this._light);
-            viewContainer.add(this._spotLightHelper);
+  //          viewContainer.add(this._spotLightHelper);
         }
         this.setTransformer(new {{ iter.class_name }}_Transformer(this._light, this));
     }
 
     onUnmerge() {
-        this._spotLightHelper.removeFromParent();
-        this._spotLightHelper.dispose();
-        this._spotLightHelper = null;
+//        this._spotLightHelper.removeFromParent();
+  //      this._spotLightHelper.dispose();
+    //    this._spotLightHelper = null;
         this._light.removeFromParent();
         this._light.dispose();
         this._light = null;

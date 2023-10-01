@@ -8,6 +8,6 @@ class {{ iter.class_name }} extends EntityBase {
     }
 
     get value() {
-        {{ common.eval_prop('expression') }};
+        return {{ common.eval_prop('expression') }};
     }
 }

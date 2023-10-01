@@ -23,6 +23,7 @@ from ncjsam.model.module.entities.lights import SpotLight
 from ncjsam.model.module.entities.cameras import PerspectiveCamera
 
 from ncjsam.model.module.entities.controls import OrbitControls
+from ncjsam.model.module.entities.controls import PointerLockControls
 
 from ncjsam.model.module.entities.sprites import TextSprite
 from ncjsam.model.module.entities.sprites import ImageSprite
@@ -61,6 +62,7 @@ def get_registry():
         PerspectiveCamera,
 
         OrbitControls,
+        PointerLockControls,
 
         TextSprite,
         ImageSprite,
